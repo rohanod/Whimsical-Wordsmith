@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Moon, Sun, Sparkles } from 'lucide-react';
+import { Moon, Sun } from 'lucide-react';
 
 export default function Home() {
   const [isDark, setIsDark] = useState(true);
@@ -66,15 +66,14 @@ export default function Home() {
             {/* Delightfully Different Words */}
             <Link href="/delightfully-different-words" className="group">
               <div 
-                className="p-8 border-2 rounded-lg transition-all duration-500 group-hover:scale-105 group-hover:rotate-1 group-hover:shadow-2xl animate-slide-up"
+                className="p-8 border-2 rounded-lg transition-all duration-500 group-hover:scale-105 group-hover:rotate-1 group-hover:shadow-2xl animate-slide-up h-80 flex items-center"
                 style={{ 
                   borderColor: '#A8A29D',
                   backgroundColor: isDark ? 'rgba(168, 162, 157, 0.1)' : 'rgba(168, 162, 157, 0.05)',
                   animationDelay: '0.2s'
                 }}
               >
-                <div className="text-center space-y-4">
-                  <div className="text-4xl animate-bounce-gentle group-hover:animate-spin-slow">✨</div>
+                <div className="text-center space-y-4 w-full">
                   <h2 className="text-2xl font-serif font-medium group-hover:text-blue-400 transition-colors duration-300">
                     Delightfully Different Words
                   </h2>
@@ -88,17 +87,14 @@ export default function Home() {
             {/* Eloquent Expressions */}
             <Link href="/eloquent-expressions" className="group">
               <div 
-                className="p-8 border-2 rounded-lg transition-all duration-500 group-hover:scale-105 group-hover:-rotate-1 group-hover:shadow-2xl animate-slide-up"
+                className="p-8 border-2 rounded-lg transition-all duration-500 group-hover:scale-105 group-hover:-rotate-1 group-hover:shadow-2xl animate-slide-up h-80 flex items-center"
                 style={{ 
                   borderColor: '#A8A29D',
                   backgroundColor: isDark ? 'rgba(168, 162, 157, 0.1)' : 'rgba(168, 162, 157, 0.05)',
                   animationDelay: '0.4s'
                 }}
               >
-                <div className="text-center space-y-4">
-                  <div className="flex justify-center">
-                    <Sparkles className="w-10 h-10 animate-pulse group-hover:animate-ping transition-all duration-300 group-hover:text-purple-400" style={{ color: '#A8A29D' }} />
-                  </div>
+                <div className="text-center space-y-4 w-full">
                   <h2 className="text-2xl font-serif font-medium group-hover:text-purple-400 transition-colors duration-300">
                     Eloquent Expressions
                   </h2>
@@ -110,51 +106,18 @@ export default function Home() {
             </Link>
           </div>
 
-          {/* Coming soon section */}
-          <div className="text-center space-y-8">
-            <h3 className="text-2xl font-serif font-medium" style={{ color: '#A8A29D' }}>
-              More delightful tools coming soon...
-            </h3>
-            
-            <div className="grid md:grid-cols-3 gap-6 max-w-2xl mx-auto">
-              <div className="text-center space-y-3 animate-slide-up hover:scale-110 transition-all duration-300 cursor-pointer" style={{ animationDelay: '0.6s' }}>
-                <div className="text-2xl animate-bounce-gentle hover:animate-spin-slow">📝</div>
-                <h4 className="font-serif font-medium hover:text-green-400 transition-colors duration-300">Poetic Paraphraser</h4>
-                <p className="text-sm font-serif hover:scale-105 transition-transform duration-300" style={{ color: '#A8A29D' }}>
-                  Transform prose into beautiful poetry
-                </p>
-              </div>
-              
-              <div className="text-center space-y-3 animate-slide-up hover:scale-110 transition-all duration-300 cursor-pointer" style={{ animationDelay: '0.8s' }}>
-                <div className="text-2xl animate-bounce-gentle hover:animate-spin-slow">🎪</div>
-                <h4 className="font-serif font-medium hover:text-red-400 transition-colors duration-300">Silly Synonym Circus</h4>
-                <p className="text-sm font-serif hover:scale-105 transition-transform duration-300" style={{ color: '#A8A29D' }}>
-                  Find the most amusing word alternatives
-                </p>
-              </div>
-              
-              <div className="text-center space-y-3 animate-slide-up hover:scale-110 transition-all duration-300 cursor-pointer" style={{ animationDelay: '1s' }}>
-                <div className="text-2xl animate-bounce-gentle hover:animate-spin-slow">🌟</div>
-                <h4 className="font-serif font-medium hover:text-yellow-400 transition-colors duration-300">Magical Metaphor Maker</h4>
-                <p className="text-sm font-serif hover:scale-105 transition-transform duration-300" style={{ color: '#A8A29D' }}>
-                  Create enchanting metaphors and similes
-                </p>
-              </div>
-            </div>
-          </div>
+
         </div>
       </main>
 
       {/* Global styles to match original tools */}
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&display=swap');
-        
         body {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
         }
         
         .font-serif {
-          font-family: 'EB Garamond', serif;
+          font-family: 'Times New Roman', Times, serif;
         }
         
         .dark {
