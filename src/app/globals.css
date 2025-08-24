@@ -3,6 +3,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --muted-foreground: #A8A29D; /* stone-400 */
+  --danger: #EF4444; /* red-500 */
 }
 
 @theme inline {
@@ -20,8 +22,50 @@
   }
 }
 
+/* Base */
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
 }
+.font-serif { font-family: var(--font-serif); }
+.dark { color-scheme: dark; }
+
+/* Tokens as utilities */
+.muted { color: var(--muted-foreground); }
+.border-muted { border-color: var(--muted-foreground); }
+.bg-muted-5 { background-color: color-mix(in srgb, var(--muted-foreground) 5%, transparent); }
+.bg-muted-10 { background-color: color-mix(in srgb, var(--muted-foreground) 10%, transparent); }
+.text-danger { color: var(--danger); }
+
+/* Common animations used across pages */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-left {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-fade-in-up { animation: fade-in-up 0.8s ease-out both; }
+.animate-slide-in-left { animation: slide-in-left 0.6s ease-out; }
+.animate-scale-in { animation: scale-in 0.5s ease-out; }
+
+/* Inputs */
+input::placeholder { color: var(--muted-foreground); opacity: 1; }
+input:focus { border-color: var(--muted-foreground); outline: none; }
+textarea::placeholder { color: var(--muted-foreground); opacity: 0.7; }
+textarea:focus { border-color: var(--muted-foreground); outline: none; }
+
+/* Non-animation utility classes formerly inline */
+.header-link:hover { background-color: color-mix(in srgb, var(--foreground) 10%, transparent); }
+.header-link.dark:hover { background-color: color-mix(in srgb, #111827 100%, transparent); }
+
+/* Animations kept local in pages via <style jsx global> blocks; do not add animation keyframes here per repo guidance. */

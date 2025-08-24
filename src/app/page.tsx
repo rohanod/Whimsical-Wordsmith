@@ -66,10 +66,8 @@ export default function Home() {
             {/* Delightfully Different Words */}
             <Link href="/delightfully-different-words" className="group">
               <div 
-                className="p-8 border-2 rounded-lg transition-all duration-500 group-hover:scale-105 group-hover:rotate-1 group-hover:shadow-2xl animate-slide-up h-80 flex items-center"
+                 className="p-8 border-2 border-muted rounded-lg bg-muted-10 transition-all duration-500 group-hover:scale-105 group-hover:rotate-1 group-hover:shadow-2xl animate-slide-up h-80 flex items-center"
                 style={{ 
-                  borderColor: '#A8A29D',
-                  backgroundColor: isDark ? 'rgba(168, 162, 157, 0.1)' : 'rgba(168, 162, 157, 0.05)',
                   animationDelay: '0.2s'
                 }}
               >
@@ -87,10 +85,8 @@ export default function Home() {
             {/* Eloquent Expressions */}
             <Link href="/eloquent-expressions" className="group">
               <div 
-                className="p-8 border-2 rounded-lg transition-all duration-500 group-hover:scale-105 group-hover:-rotate-1 group-hover:shadow-2xl animate-slide-up h-80 flex items-center"
+                 className="p-8 border-2 border-muted rounded-lg bg-muted-10 transition-all duration-500 group-hover:scale-105 group-hover:-rotate-1 group-hover:shadow-2xl animate-slide-up h-80 flex items-center"
                 style={{ 
-                  borderColor: '#A8A29D',
-                  backgroundColor: isDark ? 'rgba(168, 162, 157, 0.1)' : 'rgba(168, 162, 157, 0.05)',
                   animationDelay: '0.4s'
                 }}
               >
@@ -110,110 +106,21 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Global styles to match original tools */}
+      {/* Page-scoped animations only */}
       <style jsx global>{`
-        body {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-        }
-        
-        .font-serif {
-          font-family: 'Times New Roman', Times, serif;
-        }
-        
-        .dark {
-          color-scheme: dark;
-        }
+        @keyframes fade-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slide-up { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes bounce-gentle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+        @keyframes glow { 0%, 100% { box-shadow: 0 0 5px rgba(168, 162, 157, 0.3); } 50% { box-shadow: 0 0 20px rgba(168, 162, 157, 0.6); } }
 
-        /* Custom micro animations */
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes slide-up {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        @keyframes bounce-gentle {
-          0%, 100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-5px);
-          }
-        }
-
-        @keyframes spin-slow {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
-        }
-
-        @keyframes float {
-          0%, 100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
-        }
-
-        @keyframes glow {
-          0%, 100% {
-            box-shadow: 0 0 5px rgba(168, 162, 157, 0.3);
-          }
-          50% {
-            box-shadow: 0 0 20px rgba(168, 162, 157, 0.6);
-          }
-        }
-
-        .animate-fade-in {
-          animation: fade-in 0.8s ease-out;
-        }
-
-        .animate-slide-up {
-          animation: slide-up 0.6s ease-out both;
-        }
-
-        .animate-bounce-gentle {
-          animation: bounce-gentle 2s ease-in-out infinite;
-        }
-
-        .animate-spin-slow {
-          animation: spin-slow 2s linear infinite;
-        }
-
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-
-        .animate-glow {
-          animation: glow 2s ease-in-out infinite;
-        }
-
-        /* Hover effects */
-        .hover-lift:hover {
-          transform: translateY(-5px);
-          transition: transform 0.3s ease;
-        }
-
-        /* Staggered animations */
+        .animate-fade-in { animation: fade-in 0.8s ease-out; }
+        .animate-slide-up { animation: slide-up 0.6s ease-out both; }
+        .animate-bounce-gentle { animation: bounce-gentle 2s ease-in-out infinite; }
+        .animate-spin-slow { animation: spin-slow 2s linear infinite; }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .animate-glow { animation: glow 2s ease-in-out infinite; }
         .stagger-1 { animation-delay: 0.1s; }
         .stagger-2 { animation-delay: 0.2s; }
         .stagger-3 { animation-delay: 0.3s; }

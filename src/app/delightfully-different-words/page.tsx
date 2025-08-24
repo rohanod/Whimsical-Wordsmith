@@ -20,7 +20,8 @@ const TRANSLATIONS = {
 };
 
 const appLocale = 'en-US';
-const t = (key) => TRANSLATIONS[appLocale]?.[key] || TRANSLATIONS['en-US'][key] || key;
+type TranslationKeys = keyof typeof TRANSLATIONS[typeof appLocale];
+const t = (key: TranslationKeys): string => (TRANSLATIONS as any)[appLocale]?.[key] || (TRANSLATIONS as any)['en-US'][key] || (key as string);
 
 // Custom hook for theme management
 const useTheme = () => {
@@ -42,7 +43,8 @@ const useTheme = () => {
 };
 
 // Typewriter animation component
-const TypewriterText = ({ text, className = "", onStart }) => {
+type TypewriterProps = { text: string; className?: string; onStart?: () => void };
+const TypewriterText = ({ text, className = "", onStart }: TypewriterProps) => {
   const [displayText, setDisplayText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -71,10 +73,14 @@ const TypewriterText = ({ text, className = "", onStart }) => {
 
 const App = () => {
   const [adjective, setAdjective] = useState('');
-  const [suggestion, setSuggestion] = useState('');
+  const [suggestion, setSuggestion] = useState<{
+    word: string;
+    definition: string;
+    original: string;
+  } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [fade, setFade] = useState(false);
-  const [previousSuggestions, setPreviousSuggestions] = useState([]);
+  const [previousSuggestions, setPreviousSuggestions] = useState<string[]>([]);
   const [error, setError] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const { isDark, setIsDark } = useTheme();
@@ -88,17 +94,34 @@ const App = () => {
 
     try {
       const previousContext = refresh && previousSuggestions.length > 0
-        ? t('previouslySuggested').replace('{suggestions}', previousSuggestions.join(', '))
+        ? `Previously suggested words: ${previousSuggestions.join(', ')}.`
         : '';
 
-      const refreshContext = refresh ? t('differentFromPrevious') : '';
+      const prompt = `The user wants to find a delightfully different word to replace "very ${adjective}":
 
-      const prompt = t('claudePrompt')
-        .replace('{adjective}', adjective)
-        .replace('{adjective}', adjective)
-        .replace('{adjective}', adjective)
-        .replace('{previousContext}', previousContext)
-        .replace('{refreshContext}', refreshContext);
+"very ${adjective}"
+
+${previousContext}
+
+You are a wordsmith and vocabulary expert. Your mission: find a single, sophisticated word that captures the essence of "very ${adjective}" but with more elegance and charm.
+
+The replacement word should:
+- Be a real English word that precisely captures the intensified meaning of the adjective
+- Be distinctly different from previous suggestions
+- Sound more interesting and delightful than "very ${adjective}"
+- Be appropriate for general use
+- Have a whimsical or charming quality
+
+Return the word, its definition, and the original phrase being replaced.`;
+
+      // Define schema and example for this app
+      const schemaDescription = `A single alternative word that replaces "very + adjective" with brief definition and original phrase`;
+      
+      const exampleFormat = `{
+  "word": "effervescent",
+  "definition": "Vivacious and enthusiastic; bubbling with excitement",
+  "original": "very happy"
+}`;
 
       const response = await fetch('/api/generate', {
         method: 'POST',
@@ -107,7 +130,8 @@ const App = () => {
         },
         body: JSON.stringify({
           prompt,
-          type: 'delightfully-different-words'
+          schemaDescription,
+          exampleFormat
         }),
       });
 
@@ -116,29 +140,28 @@ const App = () => {
       }
 
       const data = await response.json();
-      const newSuggestion = data.text.trim();
       
-      setSuggestion(newSuggestion);
-      setPreviousSuggestions(prev => [...prev, newSuggestion]);
+      setSuggestion(data);
+      setPreviousSuggestions(prev => [...prev, data.word]);
     } catch (error) {
       console.error('Error fetching suggestion:', error);
       setError(true);
-      setSuggestion('');
+      setSuggestion(null);
     } finally {
       setIsLoading(false);
       setFade(false);
     }
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAdjective(e.target.value);
-    setSuggestion('');
+    setSuggestion(null);
     setPreviousSuggestions([]);
     setError(false);
     setIsTyping(false);
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       getSuggestion();
     }
@@ -192,6 +215,11 @@ const App = () => {
       {/* Main content - centered on page */}
       <main className="min-h-screen flex items-center justify-center">
         <div className="w-full max-w-2xl px-6 space-y-8">
+          {/* Description */}
+          <p className="text-center text-lg font-serif leading-relaxed" style={{ color: '#A8A29D' }}>
+            Trade the tired "very + adjective" for a single, delightful word that says it better.
+          </p>
+
           {/* Input section */}
           <div 
             className={`flex justify-center transition-transform duration-500 ease-out animate-fade-in-up ${
@@ -206,12 +234,11 @@ const App = () => {
                   type="text"
                   value={adjective}
                   onChange={handleInputChange}
-                  onKeyPress={handleKeyPress}
+                  onKeyDown={handleKeyDown}
                   onBlur={() => adjective && !suggestion && getSuggestion()}
                   placeholder={t('inputPlaceholder')}
-                  className="border-b transition-colors duration-300 bg-transparent outline-none text-center text-4xl font-serif pb-3"
+                   className="border-b border-muted transition-colors duration-300 bg-transparent outline-none text-center text-4xl font-serif pb-3"
                   style={{
-                    borderColor: '#A8A29D',
                     color: isDark ? '#ffffff' : '#1B1917',
                     width: '16rem',
                     borderBottomWidth: '1px'
@@ -219,10 +246,8 @@ const App = () => {
                 />
                 <button
                   onClick={() => adjective && getSuggestion()}
-                  className={`p-2 transition-all duration-300 relative top-1 hover:scale-110 hover:rotate-12 ${!adjective ? 'opacity-50 cursor-not-allowed' : 'hover:animate-bounce'}`}
-                  style={{
-                    color: '#A8A29D'
-                  }}
+                   className={`p-2 transition-all duration-300 relative top-1 hover:scale-110 hover:rotate-12 ${!adjective ? 'opacity-50 cursor-not-allowed' : ''} muted`}
+
                   disabled={!adjective}
                   aria-label={t('searchAlternative')}
                 >
@@ -239,11 +264,11 @@ const App = () => {
                 fade ? 'opacity-0 scale-95' : 'opacity-100 scale-100'
               }`}
             >
-              <div className="flex flex-col items-center">
+              <div className="flex flex-col items-center space-y-4">
                 <div className="flex items-center gap-3">
                   <div className="text-6xl font-serif">
                     "<TypewriterText 
-                      text={suggestion} 
+                      text={suggestion.word} 
                       onStart={() => setIsTyping(true)}
                     />"
                   </div>
@@ -259,6 +284,12 @@ const App = () => {
                   >
                     <RefreshCw className="w-4 h-4" />
                   </button>
+                </div>
+                {/* Definition */}
+                <div className="text-center max-w-lg">
+                  <p className="text-lg font-serif muted italic">
+                    {suggestion.definition}
+                  </p>
                 </div>
               </div>
             </div>
@@ -282,33 +313,7 @@ const App = () => {
 
       {/* Global styles */}
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&display=swap');
-        
-        body {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-        }
-        
-        .font-serif {
-          font-family: 'EB Garamond', serif;
-        }
-        
-        /* Dark mode styles */
-        .dark {
-          color-scheme: dark;
-        }
-        
-        /* Fix for input placeholder color */
-        input::placeholder {
-          color: #A8A29D;
-          opacity: 1;
-        }
-        
-        /* Fix for input focus border */
-        input:focus {
-          border-color: #A8A29D;
-          outline: none;
-        }
-        
+        /* Page-scoped animations only */
         @keyframes shake {
           0%, 100% { transform: translateX(0); }
           25% { transform: translateX(-5px); }
@@ -316,36 +321,18 @@ const App = () => {
         }
 
         @keyframes fade-in-up {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes slide-in-left {
-          from {
-            opacity: 0;
-            transform: translateX(-30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
+          from { opacity: 0; transform: translateX(-30px); }
+          to { opacity: 1; transform: translateX(0); }
         }
 
         @keyframes scale-in {
-          from {
-            opacity: 0;
-            transform: scale(0.9);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
+          from { opacity: 0; transform: scale(0.9); }
+          to { opacity: 1; transform: scale(1); }
         }
 
         @keyframes wiggle {
@@ -354,25 +341,11 @@ const App = () => {
           75% { transform: rotate(3deg); }
         }
         
-        .animate-shake {
-          animation: shake 0.5s ease-in-out;
-        }
-
-        .animate-fade-in-up {
-          animation: fade-in-up 0.8s ease-out both;
-        }
-
-        .animate-slide-in-left {
-          animation: slide-in-left 0.6s ease-out;
-        }
-
-        .animate-scale-in {
-          animation: scale-in 0.5s ease-out;
-        }
-
-        .animate-wiggle {
-          animation: wiggle 0.5s ease-in-out;
-        }
+        .animate-shake { animation: shake 0.5s ease-in-out; }
+        .animate-fade-in-up { animation: fade-in-up 0.8s ease-out both; }
+        .animate-slide-in-left { animation: slide-in-left 0.6s ease-out; }
+        .animate-scale-in { animation: scale-in 0.5s ease-out; }
+        .animate-wiggle { animation: wiggle 0.5s ease-in-out; }
       `}</style>
     </div>
   );
