@@ -13,7 +13,7 @@ async function generateStructuredFromText(
   schemaDescription: string,
   exampleFormat: string,
   temperature: number = 0.3
-): Promise<any> {
+): Promise<unknown> {
   try {
     const fullPrompt = `You are a JSON response generator. You MUST respond with ONLY a valid JSON object that matches the required schema exactly. Do not include any explanation, markdown formatting, or additional text - just the raw JSON object.
 

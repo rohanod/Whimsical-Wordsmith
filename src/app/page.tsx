@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { Moon, Sun } from 'lucide-react';
+import { TopBar, Description, AppCardsContainer, AppCard } from '@/app/components';
 
 export default function Home() {
   const [isDark, setIsDark] = useState(true);
@@ -18,91 +17,68 @@ export default function Home() {
     document.documentElement.classList.toggle('dark', isDark);
   }, [isDark]);
 
-  const toggleTheme = () => {
-    setIsDark(!isDark);
-  };
+
 
   return (
-    <div 
+    <div
       className="min-h-screen transition-colors duration-300 animate-fade-in"
-      style={{ 
+      style={{
         backgroundColor: isDark ? '#1B1917' : '#FAFAF9',
         color: isDark ? '#ffffff' : '#1B1917'
       }}
     >
-      {/* Header */}
-      <header className="absolute top-0 left-0 right-0 flex justify-between items-center p-6">
-        <h1 
-          className="text-3xl font-serif italic font-light"
-          style={{ color: '#A8A29D' }}
-        >
-          Whimsical Wordsmith
-        </h1>
-        <button
-          onClick={toggleTheme}
-          className={`p-2 rounded-full transition-colors ${
-            isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-          }`}
-          aria-label="Toggle theme"
-        >
-          {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-        </button>
-      </header>
+      <TopBar
+        title="Whimsical Wordsmith"
+        isDark={isDark}
+        onThemeToggle={() => setIsDark(!isDark)}
+        showBackButton={false}
+      />
+
+      {/* Update AppCard theme support */}
+      <style jsx global>{`
+        :root {
+          --app-card-bg: rgba(168, 162, 157, 0.1);
+          --app-card-border: #A8A29D;
+          --app-card-text: #1B1917;
+          --app-card-muted-text: #4B5563;
+        }
+
+        .dark {
+          --app-card-bg: rgba(168, 162, 157, 0.1);
+          --app-card-border: #A8A29D;
+          --app-card-text: #ffffff;
+          --app-card-muted-text: #D1D5DB;
+        }
+
+        .app-card {
+          background-color: var(--app-card-bg) !important;
+          border-color: var(--app-card-border) !important;
+          color: var(--app-card-text) !important;
+        }
+      `}</style>
 
       {/* Main content - centered on page */}
       <main className="min-h-screen flex items-center justify-center">
         <div className="w-full max-w-4xl px-6 space-y-12">
-          
-          {/* Welcome section */}
-          <div className="text-center space-y-6">
-            <p className="text-2xl font-serif leading-relaxed" style={{ color: '#A8A29D' }}>
-              A delightful collection of word tools to enhance your writing
-            </p>
-          </div>
+          <Description text="A delightful collection of word tools to enhance your writing" />
 
-          {/* Tools grid */}
-          <div className="grid md:grid-cols-2 gap-8 max-w-3xl mx-auto">
-            
-            {/* Delightfully Different Words */}
-            <Link href="/delightfully-different-words" className="group">
-              <div 
-                 className="p-8 border-2 border-muted rounded-lg bg-muted-10 transition-all duration-500 group-hover:scale-105 group-hover:rotate-1 group-hover:shadow-2xl animate-slide-up h-80 flex items-center"
-                style={{ 
-                  animationDelay: '0.2s'
-                }}
-              >
-                <div className="text-center space-y-4 w-full">
-                  <h2 className="text-2xl font-serif font-medium group-hover:text-blue-400 transition-colors duration-300">
-                    Delightfully Different Words
-                  </h2>
-                  <p className="text-lg font-serif leading-relaxed transition-all duration-300 group-hover:scale-105" style={{ color: '#A8A29D' }}>
-                    Transform boring "very + adjective" phrases into delightfully whimsical alternatives
-                  </p>
-                </div>
-              </div>
-            </Link>
+          <AppCardsContainer>
+            <AppCard
+              title="Delightfully Different Words"
+              description="Transform boring 'very + adjective' phrases into delightfully whimsical alternatives"
+              href="/delightfully-different-words"
+              animationDelay={400}
+              titleHoverColour="#8B5CF6"
+            />
 
-            {/* Eloquent Expressions */}
-            <Link href="/eloquent-expressions" className="group">
-              <div 
-                 className="p-8 border-2 border-muted rounded-lg bg-muted-10 transition-all duration-500 group-hover:scale-105 group-hover:-rotate-1 group-hover:shadow-2xl animate-slide-up h-80 flex items-center"
-                style={{ 
-                  animationDelay: '0.4s'
-                }}
-              >
-                <div className="text-center space-y-4 w-full">
-                  <h2 className="text-2xl font-serif font-medium group-hover:text-purple-400 transition-colors duration-300">
-                    Eloquent Expressions
-                  </h2>
-                  <p className="text-lg font-serif leading-relaxed transition-all duration-300 group-hover:scale-105" style={{ color: '#A8A29D' }}>
-                    Transform ordinary phrases into magnificently sophisticated statements
-                  </p>
-                </div>
-              </div>
-            </Link>
-          </div>
-
-
+            <AppCard
+              title="Eloquent Expressions"
+              description="Transform ordinary phrases into magnificently sophisticated statements"
+              href="/eloquent-expressions"
+              animationDelay={400}
+              titleHoverColour="#10B981"
+            />
+          </AppCardsContainer>
         </div>
       </main>
 
@@ -110,22 +86,20 @@ export default function Home() {
       <style jsx global>{`
         @keyframes fade-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes slide-up { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes bounce-gentle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
-        @keyframes glow { 0%, 100% { box-shadow: 0 0 5px rgba(168, 162, 157, 0.3); } 50% { box-shadow: 0 0 20px rgba(168, 162, 157, 0.6); } }
 
         .animate-fade-in { animation: fade-in 0.8s ease-out; }
         .animate-slide-up { animation: slide-up 0.6s ease-out both; }
-        .animate-bounce-gentle { animation: bounce-gentle 2s ease-in-out infinite; }
-        .animate-spin-slow { animation: spin-slow 2s linear infinite; }
-        .animate-float { animation: float 3s ease-in-out infinite; }
-        .animate-glow { animation: glow 2s ease-in-out infinite; }
-        .stagger-1 { animation-delay: 0.1s; }
-        .stagger-2 { animation-delay: 0.2s; }
-        .stagger-3 { animation-delay: 0.3s; }
-        .stagger-4 { animation-delay: 0.4s; }
-        .stagger-5 { animation-delay: 0.5s; }
+
+        /* Ensure app cards are visible */
+        .group {
+          display: block;
+          text-decoration: none;
+          color: inherit;
+        }
+
+        .group:hover {
+          color: inherit;
+        }
       `}</style>
     </div>
   );
