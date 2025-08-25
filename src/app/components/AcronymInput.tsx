@@ -1,7 +1,7 @@
 import React from 'react';
 import SubmitButton from './SubmitButton';
 
-interface DelightfullyDifferentWordsInputProps {
+interface AcronymInputProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
@@ -11,18 +11,17 @@ interface DelightfullyDifferentWordsInputProps {
   isDisabled?: boolean;
 }
 
-const DelightfullyDifferentWordsInput: React.FC<DelightfullyDifferentWordsInputProps> = ({
+const AcronymInput: React.FC<AcronymInputProps> = ({
   value,
   onChange,
   onKeyDown,
   onBlur,
-  placeholder = "happy",
+  placeholder = "hope",
   onSearch,
   isDisabled = false
 }) => {
   return (
-    <div className="flex items-baseline gap-4 text-4xl font-serif text-foreground">
-      <span>Very</span>
+    <div className="flex items-baseline justify-center gap-4 text-4xl font-serif text-foreground">
       <div className="relative flex items-baseline gap-2">
         <input
           type="text"
@@ -34,7 +33,7 @@ const DelightfullyDifferentWordsInput: React.FC<DelightfullyDifferentWordsInputP
           className="border-b transition-colors duration-300 bg-transparent outline-none text-center text-4xl font-serif pb-3"
           style={{
             borderColor: '#A8A29D',
-            width: '16rem',
+            width: '20rem',
             borderBottomWidth: '1px'
           }}
         />
@@ -43,7 +42,7 @@ const DelightfullyDifferentWordsInput: React.FC<DelightfullyDifferentWordsInputP
             <SubmitButton
               onClick={onSearch}
               isDisabled={isDisabled || !value}
-              ariaLabel="Search for alternative"
+              ariaLabel="Generate acronym"
             />
           </div>
         )}
@@ -52,4 +51,4 @@ const DelightfullyDifferentWordsInput: React.FC<DelightfullyDifferentWordsInputP
   );
 };
 
-export default DelightfullyDifferentWordsInput;
+export default AcronymInput;

@@ -8,7 +8,8 @@ import {
   MainInputContainer,
   DelightfullyDifferentWordsInput,
   ResultContainer,
-  RetryButton
+  RetryButton,
+  LoadingContainer
 } from '@/app/components';
 
 // Custom hook for theme management
@@ -78,6 +79,11 @@ const App = () => {
 
     setIsLoading(true);
     setError(false);
+
+    // Clear previous result when submitting a new request (not refresh)
+    if (!refresh) {
+      setSuggestion(null);
+    }
 
     try {
       const previousContext = refresh && previousSuggestions.length > 0
@@ -155,6 +161,8 @@ Return the word, its definition, and the original phrase being replaced.`;
 
   const handleRefresh = () => {
     if (suggestion && !isLoading) {
+      setSuggestion(null);
+      setError(false);
       setIsTyping(false);
       getSuggestion(true);
     }
@@ -191,6 +199,10 @@ Return the word, its definition, and the original phrase being replaced.`;
               isDisabled={isLoading}
             />
           </MainInputContainer>
+
+          {isLoading && (
+            <LoadingContainer text="Crafting the perfect synonym..." />
+          )}
 
           {suggestion && (
             <ResultContainer>

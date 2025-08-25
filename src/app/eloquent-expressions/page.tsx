@@ -59,6 +59,11 @@ const App = () => {
     setError(false);
     setCopied(false);
 
+    // Clear previous result when submitting a new request (not refresh)
+    if (!refresh) {
+      setSuggestion(null);
+    }
+
     try {
       const previousContext = refresh && previousSuggestions.length > 0
         ? `Previously crafted versions: ${previousSuggestions.join('; ')}.`
@@ -157,6 +162,9 @@ Return the transformed phrase, original phrase, and annotations explaining your 
 
   const handleRefresh = () => {
     if (suggestion && !isLoading) {
+      setSuggestion(null);
+      setError(false);
+      setCopied(false);
       setIsTyping(false);
       getSuggestion(true);
     }
@@ -195,11 +203,6 @@ Return the transformed phrase, original phrase, and annotations explaining your 
           <Description text="Rewrite any plain sentence into gloriously ornate prose—same meaning, maximum flourish." />
 
           <MainInputContainer className={isTyping ? '-translate-y-8' : 'translate-y-0'}>
-            <div className="text-3xl font-serif mb-6 text-center font-medium animate-fade-in-up text-foreground" style={{
-              animationDelay: '0.2s'
-            }}>
-              Transform:
-            </div>
             <EloquentExpressionsInput
               value={phrase}
               onChange={handleInputChange}

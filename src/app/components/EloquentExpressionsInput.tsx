@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles } from 'lucide-react';
+import SubmitButton from './SubmitButton';
 
 interface EloquentExpressionsInputProps {
   value: string;
@@ -31,19 +31,13 @@ const EloquentExpressionsInput: React.FC<EloquentExpressionsInputProps> = ({
         }}
       />
       {onSubmit && (
-        <button
-          onClick={onSubmit}
-          className={`absolute bottom-4 right-4 p-2 rounded-full transition-colors ${
-            !value
-              ? 'opacity-50 cursor-not-allowed'
-              : 'hover:bg-gray-100 dark:hover:bg-gray-800'
-          }`}
-          style={{ color: '#A8A29D' }}
-          disabled={isDisabled || !value}
-          aria-label="Transform phrase"
-        >
-          <Sparkles className="w-5 h-5" />
-        </button>
+        <div className="absolute bottom-4 right-4">
+          <SubmitButton
+            onClick={onSubmit}
+            isDisabled={isDisabled || !value}
+            ariaLabel="Transform phrase"
+          />
+        </div>
       )}
     </div>
   );

@@ -1,8 +1,7 @@
 import React from 'react';
-import { LucideIcon } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 interface SubmitButtonProps {
-  icon: LucideIcon;
   onClick?: () => void;
   isDisabled?: boolean;
   ariaLabel?: string;
@@ -10,10 +9,9 @@ interface SubmitButtonProps {
 }
 
 const SubmitButton: React.FC<SubmitButtonProps> = ({
-  icon: Icon,
   onClick,
   isDisabled = false,
-  ariaLabel,
+  ariaLabel = "Submit",
   className = ""
 }) => {
   return (
@@ -26,7 +24,7 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({
       style={{ color: '#A8A29D' }}
       aria-label={ariaLabel}
     >
-      <Icon className="w-5 h-5" />
+      <Sparkles className="w-5 h-5" />
     </button>
   );
 };

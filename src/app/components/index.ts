@@ -5,6 +5,7 @@ export { default as TopBar } from './TopBar';
 // App page components
 export { default as MainInputContainer } from './MainInputContainer';
 export { default as DelightfullyDifferentWordsInput } from './DelightfullyDifferentWordsInput';
+export { default as AcronymInput } from './AcronymInput';
 export { default as EloquentExpressionsInput } from './EloquentExpressionsInput';
 export { default as SubmitButton } from './SubmitButton';
 export { default as LoadingContainer } from './LoadingContainer';

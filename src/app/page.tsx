@@ -78,6 +78,14 @@ export default function Home() {
               animationDelay={400}
               titleHoverColour="#10B981"
             />
+
+            <AppCard
+              title="Acronym Alchemist"
+              description="Transform words and phrases into creative acronyms where each letter becomes the start of something meaningful"
+              href="/acronym-alchemist"
+              animationDelay={400}
+              titleHoverColour="#F59E0B"
+            />
           </AppCardsContainer>
         </div>
       </main>

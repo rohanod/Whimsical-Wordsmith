@@ -20,8 +20,8 @@ Project Conventions
 - Performance: Memoize expensive renders, prefer streaming where appropriate, lazy-load large client components, avoid unnecessary client JS.
 
 Add a New App (mini-guide)
-- Create folder: src/app/<slug>/page.tsx (+ optional loading.tsx).
-- Include: brief description (hero/intro), small motion (e.g., subtle hover/opacity/transform; prefer CSS or requestAnimationFrame), and at least one AI action (call /api/generate or an LLM via ai SDK). Compose the UI using reusable components from `@/app/components` (e.g., `TopBar`, `Description`, `MainInputContainer`, inputs, `ResultContainer`, `RetryButton`, `LoadingContainer`).
+- Create folder: src/app/<slug>/page.tsx.
+- Include: brief description (hero/intro), small motion (e.g., subtle hover/opacity/transform; prefer CSS or requestAnimationFrame), and at least one AI action (call /api/generate). Compose the UI using reusable components from `@/app/components` (e.g., `TopBar`, `Description`, `MainInputContainer`, inputs, `ResultContainer`, `RetryButton`, `LoadingContainer`).
 - Use Server Component by default; if you need state/effects (theme toggle, typing, inputs), either mark a small child component with 'use client' or make the page a Client Component. Keep client JS small.
 - Add meta: export metadata or generateMetadata; ensure <title> and description.
 - Styling: Tailwind v4 classes in globals.css layers or local styles; keep under ~15KB client JS.
@@ -51,6 +51,8 @@ Add a New App (mini-guide)
 - Error state: show a short message with a local `animate-shake` keyframe and use `#EF4444` color.
 - Copy feedback: swap to a check icon and show a brief "Copied!" label with `animate-pulse`.
 - Prompt diversity: when refreshing, pass previous outputs in the prompt to encourage variety.
+- Submit behavior: when submit/send button is pressed for a new request, immediately clear the result and error states before generating new content to provide clear visual feedback.
+- Retry behavior: when retry button is pressed, immediately clear the result and error states before generating new content to provide clear visual feedback.
 - Inputs: prefer `border-muted`, `bg-transparent`, and rely on global placeholder styles.
 - Icons: use lucide-react at `w-5 h-5`; add `aria-label` for icon-only buttons.
 
