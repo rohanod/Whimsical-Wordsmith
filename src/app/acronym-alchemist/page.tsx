@@ -7,6 +7,7 @@ import {
   Description,
   MainInputContainer,
   AcronymInput,
+  ExtraInstructionsInput,
   ResultContainer,
   RetryButton,
   LoadingContainer
@@ -40,6 +41,7 @@ interface AcronymResult {
 
 const App = () => {
   const [input, setInput] = useState('');
+  const [extraInstructions, setExtraInstructions] = useState('');
   const [result, setResult] = useState<AcronymResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [previousResults, setPreviousResults] = useState<string[]>([]);
@@ -69,11 +71,15 @@ const App = () => {
         ? `Previously generated acronyms: ${previousResults.join(', ')}.`
         : '';
 
+      const extraInstructionsText = extraInstructions.trim() 
+        ? `\nAdditional instructions: ${extraInstructions}\n`
+        : '';
+
       const prompt = `The user wants to create a creative acronym for the word/phrase:
 
 "${input}"
 
-${previousContext}
+${previousContext}${extraInstructionsText}
 
 You are an Acronym Alchemist - a master of creating meaningful, creative acronyms where each letter of the original word/phrase becomes the first letter of words in the acronym expansion.
 
@@ -110,6 +116,7 @@ Return the acronym (the original word in uppercase), its creative meaning, and t
           prompt,
           schemaDescription,
           exampleFormat,
+          extraInstructions,
           apiKey
         }),
       });
@@ -136,6 +143,10 @@ Return the acronym (the original word in uppercase), its creative meaning, and t
     setResult(null);
     setPreviousResults([]);
     setError(false);
+  };
+
+  const handleExtraInstructionsChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setExtraInstructions(e.target.value);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -189,6 +200,12 @@ Return the acronym (the original word in uppercase), its creative meaning, and t
               isDisabled={isLoading}
             />
           </MainInputContainer>
+
+          <ExtraInstructionsInput
+            value={extraInstructions}
+            onChange={handleExtraInstructionsChange}
+            isDisabled={isLoading}
+          />
 
           {isLoading && (
             <LoadingContainer text="Brewing your acronym..." />
