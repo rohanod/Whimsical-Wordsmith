@@ -6,13 +6,17 @@ interface APIKeyInputPopupProps {
   onClose: () => void;
   isValidating?: boolean;
   error?: string;
+  isOpen?: boolean;
+  isDark?: boolean;
 }
 
 const APIKeyInputPopup: React.FC<APIKeyInputPopupProps> = ({
   onSave,
   onClose,
   isValidating = false,
-  error
+  error,
+  isOpen = true,
+  isDark = true
 }) => {
   const [apiKey, setApiKey] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -58,19 +62,36 @@ const APIKeyInputPopup: React.FC<APIKeyInputPopupProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-lg w-full shadow-2xl border border-gray-200 dark:border-gray-700">
+    <div
+      className={`fixed inset-0 flex items-center justify-center z-50 p-4 transition-opacity duration-300 ${
+        isOpen ? 'opacity-100' : 'opacity-0'
+      } backdrop-blur-sm`}
+      style={{
+        background: isDark
+          ? 'rgba(27, 25, 23, 0.8)'
+          : 'rgba(250, 250, 249, 0.9)'
+      }}
+    >
+      <div
+        className={`rounded-2xl p-8 max-w-lg w-full shadow-2xl border-2 transform transition-all duration-300 ${
+          isOpen ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
+        }`}
+        style={{
+          backgroundColor: isDark ? '#1B1917' : '#FAFAF9',
+          borderColor: '#A8A29D'
+        }}
+      >
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-stone-100 dark:bg-stone-700 rounded-lg">
-              <Key className="w-6 h-6 text-stone-600 dark:text-stone-400" />
+            <div className="p-2 bg-muted-5 rounded-lg">
+              <Key className="w-6 h-6 muted" />
             </div>
             <div>
               <h2 className="text-2xl font-serif font-medium text-foreground">
                 API Key Required
               </h2>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm muted">
                 Enter your Google Generative AI API key
               </p>
             </div>
@@ -85,16 +106,16 @@ const APIKeyInputPopup: React.FC<APIKeyInputPopupProps> = ({
         </div>
 
         {/* Instructions */}
-        <div className="mb-6 p-4 bg-stone-50 dark:bg-stone-900/50 rounded-lg">
-          <h3 className="font-medium text-stone-900 dark:text-stone-100 mb-2">
+        <div className="mb-6 p-4 bg-muted-5 rounded-lg border border-muted">
+          <h3 className="font-medium text-foreground mb-2">
             How to get your API key:
           </h3>
-          <ol className="text-sm text-stone-600 dark:text-stone-400 space-y-1 list-decimal list-inside">
+          <ol className="text-sm muted space-y-1 list-decimal list-inside">
             <li>Go to the <a
                 href="https://aistudio.google.com/app/apikey"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-stone-700 dark:text-stone-300 underline hover:text-stone-800"
+                className="underline text-foreground hover:opacity-80"
               >
                 Google AI Studio
               </a></li>
@@ -116,7 +137,7 @@ const APIKeyInputPopup: React.FC<APIKeyInputPopupProps> = ({
               className={`w-full p-4 pr-12 border-2 rounded-lg bg-transparent outline-none text-lg font-serif transition-colors duration-300 ${
                 validationError || error
                   ? 'border-red-400 focus:border-red-500'
-                  : 'border-stone-300 dark:border-stone-600 focus:border-stone-500'
+                  : 'border-muted focus:border-muted'
               }`}
               autoFocus
               disabled={isValidating}
@@ -124,7 +145,7 @@ const APIKeyInputPopup: React.FC<APIKeyInputPopupProps> = ({
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 hover:bg-muted-5 rounded transition-colors"
               aria-label={showPassword ? 'Hide API key' : 'Show API key'}
             >
               {showPassword ? (
@@ -150,14 +171,14 @@ const APIKeyInputPopup: React.FC<APIKeyInputPopupProps> = ({
             <button
               onClick={onClose}
               disabled={isValidating}
-              className="px-6 py-2 border-2 border-stone-300 dark:border-stone-600 hover:bg-stone-50 dark:hover:bg-stone-800 text-stone-600 dark:text-stone-400 rounded-lg transition-colors duration-300 font-serif disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2 border-2 border-muted hover:bg-muted-5 muted rounded-lg transition-colors duration-300 font-serif disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
               disabled={!apiKey.trim() || isValidating}
-              className="px-6 py-2 bg-stone-600 hover:bg-stone-700 disabled:bg-stone-300 disabled:cursor-not-allowed text-white rounded-lg transition-colors duration-300 font-serif flex items-center gap-2"
+              className="px-6 py-2 border-2 border-muted hover:bg-muted-5 text-foreground rounded-lg transition-all duration-300 font-serif flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105"
             >
               {isValidating && (
                 <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -168,8 +189,8 @@ const APIKeyInputPopup: React.FC<APIKeyInputPopupProps> = ({
         </div>
 
         {/* Security Note */}
-        <div className="mt-6 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-          <p className="text-xs text-amber-700 dark:text-amber-400">
+        <div className="mt-6 p-3 bg-muted-5 border border-muted rounded-lg">
+          <p className="text-xs muted">
             🔒 Your API key is stored locally in your browser and is never sent to our servers.
             It&apos;s only used to communicate directly with Google&apos;s AI services.
           </p>

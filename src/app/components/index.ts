@@ -16,6 +16,7 @@ export { default as HoverableText } from './HoverableText';
 // API Key Management
 export { default as APIKeyInputPopup } from './APIKeyInputPopup';
 export { default as APIKeyProvider } from './APIKeyProvider';
+export { default as ClearStorageHelper } from './ClearStorageHelper';
 
 // Main page components
 export { default as AppCardsContainer } from './AppCardsContainer';
