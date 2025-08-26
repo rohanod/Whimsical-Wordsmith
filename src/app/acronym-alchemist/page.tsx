@@ -11,6 +11,7 @@ import {
   RetryButton,
   LoadingContainer
 } from '@/app/components';
+import { useApiKey } from '@/app/hooks/useApiKey';
 
 // Custom hook for theme management
 const useTheme = () => {
@@ -44,9 +45,16 @@ const App = () => {
   const [previousResults, setPreviousResults] = useState<string[]>([]);
   const [error, setError] = useState(false);
   const { isDark, setIsDark } = useTheme();
+  const { apiKey, validateApiKey } = useApiKey();
 
   const generateAcronym = async (refresh = false) => {
     if (!input.trim() || isLoading) return;
+
+    // Validate API key before making request
+    const isValidKey = await validateApiKey();
+    if (!isValidKey) {
+      return; // API key validation will handle showing the popup
+    }
 
     setIsLoading(true);
     setError(false);
@@ -101,7 +109,8 @@ Return the acronym (the original word in uppercase), its creative meaning, and t
         body: JSON.stringify({
           prompt,
           schemaDescription,
-          exampleFormat
+          exampleFormat,
+          apiKey
         }),
       });
 

@@ -4,15 +4,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import { writeFile } from 'fs/promises';
 import path from 'path';
 
-// Global model configuration
-const MODEL = google('gemini-2.5-flash');
-
 // Universal text generation with JSON parsing
 async function generateStructuredFromText(
   prompt: string,
   schemaDescription: string,
   exampleFormat: string,
-  temperature: number = 0.3
+  temperature: number = 0.3,
+  apiKey?: string
 ): Promise<unknown> {
   try {
     const fullPrompt = `You are a JSON response generator. You MUST respond with ONLY a valid JSON object that matches the required schema exactly. Do not include any explanation, markdown formatting, or additional text - just the raw JSON object.
@@ -29,15 +27,29 @@ ${prompt}
 IMPORTANT: Your response must be ONLY the JSON object, nothing else. No markdown code blocks, no explanations, no additional text.`;
 
     console.log('Generating with schema description:', schemaDescription);
-    
+
     // Write debug info to file
     await writeDebugLog(fullPrompt, 'Generating...', schemaDescription);
-    
+
+    // Create model with user-provided API key
+    // Temporarily set the API key in environment for this request
+    const originalApiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+    if (apiKey) {
+      process.env.GOOGLE_GENERATIVE_AI_API_KEY = apiKey;
+    }
+
+    const model = google('gemini-2.5-flash');
+
     const result = await generateText({
-      model: MODEL,
+      model,
       prompt: fullPrompt,
       temperature,
     });
+
+    // Restore original API key
+    if (apiKey) {
+      process.env.GOOGLE_GENERATIVE_AI_API_KEY = originalApiKey;
+    }
     
     console.log('Raw AI response text:', result.text);
     
@@ -103,7 +115,7 @@ ${aiResponse}
 
 export async function POST(request: NextRequest) {
   try {
-    const { prompt, schemaDescription, exampleFormat, temperature = 0.3 } = await request.json();
+    const { prompt, schemaDescription, exampleFormat, temperature = 0.3, apiKey } = await request.json();
 
     if (!prompt || !schemaDescription || !exampleFormat) {
       return NextResponse.json(
@@ -112,7 +124,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const result = await generateStructuredFromText(prompt, schemaDescription, exampleFormat, temperature);
+    // Check if API key is provided when UserGivesKey is true
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: 'API key is required' },
+        { status: 401 }
+      );
+    }
+
+    const result = await generateStructuredFromText(prompt, schemaDescription, exampleFormat, temperature, apiKey);
 
     return NextResponse.json(result);
   } catch (error) {

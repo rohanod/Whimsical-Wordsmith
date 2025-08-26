@@ -13,6 +13,10 @@ export { default as ResultContainer } from './ResultContainer';
 export { default as RetryButton } from './RetryButton';
 export { default as HoverableText } from './HoverableText';
 
+// API Key Management
+export { default as APIKeyInputPopup } from './APIKeyInputPopup';
+export { default as APIKeyProvider } from './APIKeyProvider';
+
 // Main page components
 export { default as AppCardsContainer } from './AppCardsContainer';
 export { default as AppCard } from './AppCard';

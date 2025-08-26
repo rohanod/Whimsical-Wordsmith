@@ -11,6 +11,7 @@ import {
   RetryButton,
   LoadingContainer
 } from '@/app/components';
+import { useApiKey } from '@/app/hooks/useApiKey';
 
 // Custom hook for theme management
 const useTheme = () => {
@@ -73,9 +74,16 @@ const App = () => {
   const [error, setError] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const { isDark, setIsDark } = useTheme();
+  const { apiKey, validateApiKey } = useApiKey();
 
   const getSuggestion = async (refresh = false) => {
     if (!adjective.trim() || isLoading) return;
+
+    // Validate API key before making request
+    const isValidKey = await validateApiKey();
+    if (!isValidKey) {
+      return; // API key validation will handle showing the popup
+    }
 
     setIsLoading(true);
     setError(false);
@@ -124,7 +132,8 @@ Return the word, its definition, and the original phrase being replaced.`;
         body: JSON.stringify({
           prompt,
           schemaDescription,
-          exampleFormat
+          exampleFormat,
+          apiKey
         }),
       });
 

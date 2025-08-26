@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import APIKeyProvider from "./components/APIKeyProvider";
 
 export const metadata: Metadata = {
   title: "Whimsical Wordsmith",
@@ -14,7 +15,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        {children}
+        <APIKeyProvider>
+          {children}
+        </APIKeyProvider>
       </body>
     </html>
   );

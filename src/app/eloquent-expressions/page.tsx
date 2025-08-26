@@ -12,8 +12,7 @@ import {
   LoadingContainer,
   HoverableText
 } from '@/app/components';
-
-
+import { useApiKey } from '@/app/hooks/useApiKey';
 
 // Custom hook for theme management
 const useTheme = () => {
@@ -51,9 +50,16 @@ const App = () => {
   const [isTyping, setIsTyping] = useState(false);
   const [copied, setCopied] = useState(false);
   const { isDark, setIsDark } = useTheme();
+  const { apiKey, validateApiKey } = useApiKey();
 
   const getSuggestion = async (refresh = false) => {
     if (!phrase.trim() || isLoading) return;
+
+    // Validate API key before making request
+    const isValidKey = await validateApiKey();
+    if (!isValidKey) {
+      return; // API key validation will handle showing the popup
+    }
 
     setIsLoading(true);
     setError(false);
@@ -123,7 +129,8 @@ Return the transformed phrase, original phrase, and annotations explaining your 
         body: JSON.stringify({
           prompt,
           schemaDescription,
-          exampleFormat
+          exampleFormat,
+          apiKey
         }),
       });
 

@@ -27,16 +27,16 @@ Add a New App (mini-guide)
 - Styling: Tailwind v4 classes in globals.css layers or local styles; keep under ~15KB client JS.
 - Accessibility: keyboard focus, aria labels, alt text; avoid onKeyPress (use onKeyDown).
 - Wire API: if needed, add route under src/app/api/<name>/route.ts with validation and proper status codes.
-- Naming guide: Prefer playful, alliterative, and fancy titles (e.g., “Magniloquent Mnemonics”). Use a short slug in kebab-case (e.g., magniloquent-mnemonics). Page title format: <Title> — <concise tagline>.
+- Naming guide: Prefer playful, alliterative, and fancy titles (e.g., "Magniloquent Mnemonics"). Use a short slug in kebab-case (e.g., magniloquent-mnemonics). Page title format: <Title> — <concise tagline>.
 - Action button hover: use `transition-all duration-300` with `hover:scale-110 hover:rotate-12` on icon
   buttons for subtle motion feedback.
 - Global CSS utilities: use `muted`, `border-muted`, `bg-muted-5`, `bg-muted-10`; motions
   `animate-fade-in-up`, `animate-slide-in-left`, `animate-scale-in`. Keep page-specific keyframes in
   `<style jsx global>`.
 - API call to `/api/generate`: body JSON includes `prompt`, `schemaDescription`, `exampleFormat`,
-  optional `temperature` (defaults to 0.3).
+  optional `temperature` (defaults to 0.3), and `apiKey` (when UserGivesKey is true).
 - Response shape: success returns your structured object; errors return `{ error: string }` with
-  appropriate status. Define types matching your app’s schema (e.g., Eloquent: `transformed`,
+  appropriate status. Define types matching your app's schema (e.g., Eloquent: `transformed`,
   `original`, `annotations[{ word, reasoning }]`; Delight: `word`, `definition`, `original`). Treat
   the response as already-structured JSON (no markdown code fences) and parse/validate accordingly.
 - Loading/disabled states: use `animate-spin` on loading icons; add `disabled` and
@@ -55,6 +55,43 @@ Add a New App (mini-guide)
 - Retry behavior: when retry button is pressed, immediately clear the result and error states before generating new content to provide clear visual feedback.
 - Inputs: prefer `border-muted`, `bg-transparent`, and rely on global placeholder styles.
 - Icons: use lucide-react at `w-5 h-5`; add `aria-label` for icon-only buttons.
+
+## API Key Management
+When `UserGivesKey` is true in `config.tsx`, implement user-provided API keys:
+
+1. **Configuration**: Set `UserGivesKey` to `true` in `src/app/config.tsx` to enable user API key input.
+2. **Universal Logic**: Import and use the `useApiKey` hook in your app component:
+   ```typescript
+   import { useApiKey } from '@/app/hooks/useApiKey';
+
+   const { apiKey, validateApiKey } = useApiKey();
+   ```
+3. **API Key Validation**: Call `validateApiKey()` before making API requests:
+   ```typescript
+   const isValidKey = await validateApiKey();
+   if (!isValidKey) return; // Popup will be shown automatically
+   ```
+4. **API Requests**: Include the API key in your `/api/generate` request body:
+   ```typescript
+   const response = await fetch('/api/generate', {
+     method: 'POST',
+     headers: { 'Content-Type': 'application/json' },
+     body: JSON.stringify({
+       prompt,
+       schemaDescription,
+       exampleFormat,
+       apiKey // Include the user's API key
+     }),
+   });
+   ```
+5. **Popup Management**: The `APIKeyProvider` in the root layout automatically handles showing the API key input popup when needed.
+6. **Storage**: API keys are securely stored in localStorage and persist across sessions.
+7. **Error Handling**: API requests without valid keys will return a 401 status with an error message.
+
+## Security Notes
+- API keys are stored in browser localStorage (not secure for production without additional measures)
+- Never commit API keys to version control
+- Consider implementing server-side API key validation for production applications
 
 Component Architecture
 The app uses a reusable component system located in `src/app/components/`:
