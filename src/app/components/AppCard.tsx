@@ -19,7 +19,7 @@ const AppCard: React.FC<AppCardProps> = ({
   return (
     <Link href={href} className="group block">
       <div
-        className="app-card p-8 border-2 rounded-lg transition-all duration-500 group-hover:scale-105 group-hover:shadow-2xl group-hover:rotate-2 opacity-100 h-80 flex items-center"
+        className="app-card p-8 border-2 rounded-lg transition-all duration-500 group-hover:scale-105 group-hover:shadow-2xl group-hover:rotate-2 opacity-100 h-80 flex items-center flex-shrink-0 min-w-80 w-80"
         style={{
           animationDelay: `${animationDelay}s`,
           backgroundColor: 'var(--app-card-bg, rgba(168, 162, 157, 0.1))',

@@ -21,7 +21,7 @@ export default function Home() {
 
   return (
     <div
-      className="min-h-screen transition-colors duration-300 animate-fade-in"
+      className="h-screen overflow-hidden transition-colors duration-300 animate-fade-in"
       style={{
         backgroundColor: isDark ? '#1B1917' : '#FAFAF9',
         color: isDark ? '#ffffff' : '#1B1917'
@@ -58,8 +58,8 @@ export default function Home() {
       `}</style>
 
       {/* Main content - centered on page */}
-      <main className="min-h-screen flex items-center justify-center">
-        <div className="w-full max-w-4xl px-6 space-y-12">
+      <main className="h-full flex flex-col items-center justify-center">
+        <div className="w-full px-8 space-y-8 flex flex-col items-center">
           <Description text="A delightful collection of word tools to enhance your writing" />
 
           <AppCardsContainer>
@@ -107,6 +107,44 @@ export default function Home() {
 
         .group:hover {
           color: inherit;
+        }
+
+        /* Custom scrollbar styling */
+        .scrollbar-custom {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(168, 162, 157, 0.6) rgba(168, 162, 157, 0.1);
+          scroll-behavior: smooth;
+        }
+
+        .scrollbar-custom::-webkit-scrollbar {
+          height: 8px;
+        }
+
+        .scrollbar-custom::-webkit-scrollbar-track {
+          background: rgba(168, 162, 157, 0.1);
+          border-radius: 4px;
+        }
+
+        .scrollbar-custom::-webkit-scrollbar-thumb {
+          background: rgba(168, 162, 157, 0.6);
+          border-radius: 4px;
+          transition: background-color 0.3s ease;
+        }
+
+        .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+          background: rgba(168, 162, 157, 0.8);
+        }
+
+        .dark .scrollbar-custom::-webkit-scrollbar-track {
+          background: rgba(168, 162, 157, 0.15);
+        }
+
+        .dark .scrollbar-custom::-webkit-scrollbar-thumb {
+          background: rgba(168, 162, 157, 0.7);
+        }
+
+        .dark .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+          background: rgba(168, 162, 157, 0.9);
         }
       `}</style>
     </div>
