@@ -1,4 +1,4 @@
-import { google } from '@ai-sdk/google';
+import { createGoogleGenerativeAI, google } from '@ai-sdk/google';
 import { generateText } from 'ai';
 import { NextRequest, NextResponse } from 'next/server';
 import { writeFile } from 'fs/promises';
@@ -31,25 +31,24 @@ IMPORTANT: Your response must be ONLY the JSON object, nothing else. No markdown
     // Write debug info to file
     await writeDebugLog(fullPrompt, 'Generating...', schemaDescription);
 
-    // Create model with user-provided API key
-    // Temporarily set the API key in environment for this request
-    const originalApiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY;
+    // Create model with user-provided API key using proper SDK configuration
+    let model;
     if (apiKey) {
-      process.env.GOOGLE_GENERATIVE_AI_API_KEY = apiKey;
+      // Use custom Google AI provider with user-provided API key
+      const customGoogle = createGoogleGenerativeAI({
+        apiKey,
+      });
+      model = customGoogle('gemini-2.5-flash');
+    } else {
+      // Use default provider (falls back to environment variable)
+      model = google('gemini-2.5-flash');
     }
-
-    const model = google('gemini-2.5-flash');
 
     const result = await generateText({
       model,
       prompt: fullPrompt,
       temperature,
     });
-
-    // Restore original API key
-    if (apiKey) {
-      process.env.GOOGLE_GENERATIVE_AI_API_KEY = originalApiKey;
-    }
     
     console.log('Raw AI response text:', result.text);
     
