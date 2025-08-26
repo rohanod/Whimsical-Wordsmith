@@ -10,7 +10,7 @@ interface APIKeyProviderProps {
 }
 
 const APIKeyProvider: React.FC<APIKeyProviderProps> = ({ children }) => {
-  const { isPopupVisible, handleSaveApiKey, handleClosePopup } = useApiKey();
+  const { isPopupVisible, handleSaveApiKey, handleClosePopup, isValidating } = useApiKey();
 
   // Only show API key functionality if UserGivesKey is true
   if (!UserGivesKey) {
@@ -24,6 +24,7 @@ const APIKeyProvider: React.FC<APIKeyProviderProps> = ({ children }) => {
         <APIKeyInputPopup
           onSave={handleSaveApiKey}
           onClose={handleClosePopup}
+          isValidating={isValidating}
         />
       )}
     </>
