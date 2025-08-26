@@ -7,6 +7,7 @@ export { default as MainInputContainer } from './MainInputContainer';
 export { default as DelightfullyDifferentWordsInput } from './DelightfullyDifferentWordsInput';
 export { default as AcronymInput } from './AcronymInput';
 export { default as EloquentExpressionsInput } from './EloquentExpressionsInput';
+export { default as DramaticDeclarationsInput } from './DramaticDeclarationsInput';
 export { default as ExtraInstructionsInput } from './ExtraInstructionsInput';
 export { default as SubmitButton } from './SubmitButton';
 export { default as LoadingContainer } from './LoadingContainer';

@@ -86,6 +86,14 @@ export default function Home() {
               animationDelay={400}
               titleHoverColour="#F59E0B"
             />
+
+            <AppCard
+              title="Dramatic Declarations"
+              description="Transform simple acceptances and rejections into magnificently theatrical proclamations"
+              href="/dramatic-declarations"
+              animationDelay={400}
+              titleHoverColour="#EF4444"
+            />
           </AppCardsContainer>
         </div>
       </main>
