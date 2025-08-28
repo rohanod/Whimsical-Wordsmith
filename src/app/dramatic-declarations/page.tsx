@@ -249,6 +249,7 @@ Return the dramatic declaration, whether it's an acceptance or rejection, and th
                         : 'text-red-600 dark:text-red-400'
                     }`}
                     onAnimationStart={() => setIsTyping(true)}
+                    aria-live="polite"
                   >
                     {declaration.response}
                   </div>
@@ -264,6 +265,7 @@ Return the dramatic declaration, whether it's an acceptance or rejection, and th
               )}
             </ResultContainer>
           )}
+
 
           {error && (
             <div className="flex justify-center animate-shake">
@@ -281,22 +283,6 @@ Return the dramatic declaration, whether it's an acceptance or rejection, and th
           )}
         </div>
       </main>
-
-      <style jsx global>{`
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-5px); }
-          75% { transform: translateX(5px); }
-        }
-
-        @keyframes fade-in-up {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-shake { animation: shake 0.5s ease-in-out; }
-        .animate-fade-in-up { animation: fade-in-up 0.8s ease-out both; }
-      `}</style>
     </div>
   );
 };

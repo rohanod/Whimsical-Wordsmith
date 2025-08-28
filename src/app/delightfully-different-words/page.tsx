@@ -1,15 +1,14 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { RefreshCw } from 'lucide-react';
 import {
   TopBar,
   Description,
   MainInputContainer,
   DelightfullyDifferentWordsInput,
   ResultContainer,
-  RetryButton,
-  LoadingContainer
+  LoadingContainer,
+  ShortResponse
 } from '@/app/components';
 import { useApiKey } from '@/app/hooks/useApiKey';
 
@@ -30,35 +29,6 @@ const useTheme = () => {
   }, [isDark]);
 
   return { isDark, setIsDark };
-};
-
-// Typewriter animation component
-type TypewriterProps = { text: string; className?: string; onStart?: () => void };
-const TypewriterText = ({ text, className = "", onStart }: TypewriterProps) => {
-  const [displayText, setDisplayText] = useState('');
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    if (currentIndex === 0 && text && onStart) {
-      onStart();
-    }
-
-    if (currentIndex < text.length) {
-      const timeout = setTimeout(() => {
-        setDisplayText(prev => prev + text[currentIndex]);
-        setCurrentIndex(prev => prev + 1);
-      }, 50);
-
-      return () => clearTimeout(timeout);
-    }
-  }, [currentIndex, text, onStart]);
-
-  useEffect(() => {
-    setDisplayText('');
-    setCurrentIndex(0);
-  }, [text]);
-
-  return <span className={className}>{displayText}</span>;
 };
 
 const App = () => {
@@ -215,25 +185,12 @@ Return the word, its definition, and the original phrase being replaced.`;
 
           {suggestion && (
             <ResultContainer>
-              <div className="flex items-center gap-3">
-                                <div className="text-6xl font-serif">
-                    &ldquo;<TypewriterText
-                      text={suggestion.word}
-                      onStart={() => setIsTyping(true)}
-                    />&rdquo;
-                  </div>
-                <RetryButton
-                  icon={RefreshCw}
-                  onClick={handleRefresh}
-                  isDisabled={isLoading}
-                  ariaLabel="Get another suggestion"
-                />
-              </div>
-                              <div className="text-center max-w-lg">
-                  <p className="text-lg font-serif italic text-foreground">
-                    {suggestion.definition}
-                  </p>
-                </div>
+              <ShortResponse
+                data={suggestion}
+                isLoading={isLoading}
+                onRefresh={handleRefresh}
+                onStartTyping={() => setIsTyping(true)}
+              />
             </ResultContainer>
           )}
 
@@ -249,18 +206,6 @@ Return the word, its definition, and the original phrase being replaced.`;
           )}
         </div>
       </main>
-
-      {/* Global styles */}
-      <style jsx global>{`
-        /* Page-scoped animations only */
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-5px); }
-          75% { transform: translateX(5px); }
-        }
-
-        .animate-shake { animation: shake 0.5s ease-in-out; }
-      `}</style>
     </div>
   );
 };

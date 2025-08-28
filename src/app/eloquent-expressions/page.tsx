@@ -1,17 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, Copy, Check } from 'lucide-react';
+
 import {
   TopBar,
   Description,
   MainInputContainer,
   EloquentExpressionsInput,
   ResultContainer,
-  RetryButton,
   LoadingContainer,
-  HoverableText
-} from '@/app/components';
+  LongResponse
+ } from '@/app/components';
 import { useApiKey } from '@/app/hooks/useApiKey';
 
 // Custom hook for theme management
@@ -36,9 +35,8 @@ const useTheme = () => {
 const App = () => {
   const [phrase, setPhrase] = useState('');
   const [suggestion, setSuggestion] = useState<{
-    transformed: string;
     original: string;
-    annotations: Array<{
+    words: Array<{
       word: string;
       reasoning: string;
     }>;
@@ -48,7 +46,7 @@ const App = () => {
   const [previousSuggestions, setPreviousSuggestions] = useState<string[]>([]);
   const [error, setError] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  const [copied, setCopied] = useState(false);
+
   const { isDark, setIsDark } = useTheme();
   const { apiKey, validateApiKey } = useApiKey();
 
@@ -63,7 +61,7 @@ const App = () => {
 
     setIsLoading(true);
     setError(false);
-    setCopied(false);
+    // no-op: copy state handled inside LongResponse
 
     // Clear previous result when submitting a new request (not refresh)
     if (!refresh) {
@@ -97,27 +95,20 @@ Your rewritten phrase should:
 - Be entertaining and delightfully over-the-top
 - Respect the length guidelines above
 
-Additionally, provide annotations for 3-5 key word choices. Focus on individual words or maximum 2-word phrases that showcase the most striking transformations. Each explanation should be maximum 15 words explaining simply why you chose that specific word/phrase over simpler alternatives.
+Additionally, provide annotations for 3-5 key word choices as an array of items with exactly these fields and no extra properties: word and reasoning. Do NOT include positions, indices, or counts. Focus on individual words or maximum 2-word phrases. Each explanation should be ≤ 15 words, simple and clear.
 
 Prefer shorter explanations for single words over longer explanations for phrases.
 
-Return the transformed phrase, original phrase, and annotations explaining your word choices.`;
+Return JSON with fields original and words (array of { word, reasoning }). Do not include transformed.`;
 
       // Define schema and example for this app
-      const schemaDescription = `Eloquent phrase transformation with original phrase and 3-5 annotations for key word choices (single words or max 2-word phrases with max 15-word explanations)`;
+      const schemaDescription = `Original phrase with 3-5 words [{ word, reasoning }] (no positions); no transformed output`;
       
       const exampleFormat = `{
-  "transformed": "I find myself in a state of profound gastronomic yearning",
   "original": "I'm hungry",
-  "annotations": [
-    {
-      "word": "profound",
-      "reasoning": "Elevates simple hunger to philosophical depth"
-    },
-    {
-      "word": "gastronomic yearning",
-      "reasoning": "Transforms 'hungry' into sophisticated culinary desire"
-    }
+  "words": [
+    { "word": "profound", "reasoning": "Elevates simple hunger to philosophical depth" },
+    { "word": "gastronomic yearning", "reasoning": "Transforms 'hungry' into sophisticated culinary desire" }
   ]
 }`;
 
@@ -157,7 +148,7 @@ Return the transformed phrase, original phrase, and annotations explaining your 
     setPreviousSuggestions([]);
     setError(false);
     setIsTyping(false);
-    setCopied(false);
+    // no-op: copy state handled inside LongResponse
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -171,23 +162,13 @@ Return the transformed phrase, original phrase, and annotations explaining your 
     if (suggestion && !isLoading) {
       setSuggestion(null);
       setError(false);
-      setCopied(false);
+    // copy state handled inside LongResponse
       setIsTyping(false);
       getSuggestion(true);
     }
   };
 
-  const copyToClipboard = async () => {
-    if (suggestion) {
-      try {
-        await navigator.clipboard.writeText(suggestion.transformed);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      } catch (err) {
-        console.error('Failed to copy:', err);
-      }
-    }
-  };
+
 
   return (
     <div
@@ -222,45 +203,13 @@ Return the transformed phrase, original phrase, and annotations explaining your 
 
           {suggestion && (
             <ResultContainer>
-              <div className="w-full max-w-3xl">
-                <div
-                  className="text-3xl font-serif leading-relaxed text-center p-8 rounded-lg border-2 border-muted bg-muted-10 relative"
-                >
-                  <div className="absolute top-4 right-4 flex gap-2">
-                    <button
-                      onClick={copyToClipboard}
-                      className={`p-2 rounded-full transition-all duration-300 ${
-                        isDark
-                          ? 'hover:bg-gray-800'
-                          : 'hover:bg-gray-100'
-                      }`}
-                      style={{ color: '#A8A29D' }}
-                      aria-label="Copy to clipboard"
-                    >
-                      {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    </button>
-                    <RetryButton
-                      icon={RefreshCw}
-                      onClick={handleRefresh}
-                      isDisabled={isLoading}
-                      ariaLabel="Get another version"
-                    />
-                  </div>
-                  <HoverableText
-                    text={suggestion.transformed}
-                    annotations={suggestion.annotations || []}
-                    onStart={() => setIsTyping(true)}
-                  />
-                </div>
-              </div>
-
-              {copied && (
-                <div
-                  className="text-sm font-serif animate-pulse muted"
-                >
-                  Copied!
-                </div>
-              )}
+              <LongResponse
+                isDark={isDark}
+                data={{ text: suggestion.original, original: suggestion.original, words: suggestion.words }}
+                isLoading={isLoading}
+                onRefresh={handleRefresh}
+                onStartTyping={() => setIsTyping(true)}
+              />
             </ResultContainer>
           )}
 
@@ -280,24 +229,6 @@ Return the transformed phrase, original phrase, and annotations explaining your 
           )}
         </div>
       </main>
-
-      {/* Global styles */}
-      <style jsx global>{`
-        /* Page-scoped animations only */
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-5px); }
-          75% { transform: translateX(5px); }
-        }
-
-        @keyframes fade-in-up {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
-        .animate-shake { animation: shake 0.5s ease-in-out; }
-        .animate-fade-in-up { animation: fade-in-up 0.8s ease-out both; }
-      `}</style>
     </div>
   );
 };
