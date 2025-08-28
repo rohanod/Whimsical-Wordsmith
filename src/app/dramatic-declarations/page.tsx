@@ -1,15 +1,15 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, Copy, Check } from 'lucide-react';
+
 import {
   TopBar,
   Description,
   MainInputContainer,
   DramaticDeclarationsInput,
   ResultContainer,
-  RetryButton,
-  LoadingContainer
+  LoadingContainer,
+  LongResponse
 } from '@/app/components';
 import { useApiKey } from '@/app/hooks/useApiKey';
 
@@ -42,7 +42,6 @@ const App = () => {
   const [previousDeclarations, setPreviousDeclarations] = useState<string[]>([]);
   const [error, setError] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
-  const [copied, setCopied] = useState(false);
   const { isDark, setIsDark } = useTheme();
   const { apiKey, validateApiKey } = useApiKey();
 
@@ -56,7 +55,6 @@ const App = () => {
 
     setIsLoading(true);
     setError(false);
-    setCopied(false);
 
     if (!refresh) {
       setDeclaration(null);
@@ -144,7 +142,6 @@ Return the dramatic declaration, whether it's an acceptance or rejection, and th
     setPreviousDeclarations([]);
     setError(false);
     setIsTyping(false);
-    setCopied(false);
   };
 
   const handleResponseTypeChange = (type: 'accept' | 'decline') => {
@@ -152,7 +149,6 @@ Return the dramatic declaration, whether it's an acceptance or rejection, and th
     setDeclaration(null);
     setPreviousDeclarations([]);
     setError(false);
-    setCopied(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -166,23 +162,12 @@ Return the dramatic declaration, whether it's an acceptance or rejection, and th
     if (declaration && !isLoading) {
       setDeclaration(null);
       setError(false);
-      setCopied(false);
       setIsTyping(false);
       getDeclaration(true);
     }
   };
 
-  const copyToClipboard = async () => {
-    if (declaration) {
-      try {
-        await navigator.clipboard.writeText(declaration.response);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      } catch (err) {
-        console.error('Failed to copy:', err);
-      }
-    }
-  };
+
 
   return (
     <div
@@ -216,55 +201,21 @@ Return the dramatic declaration, whether it's an acceptance or rejection, and th
             />
           </MainInputContainer>
 
-          {declaration && (
-            <ResultContainer>
-              <div className="w-full max-w-3xl">
-                <div
-                  className="text-3xl font-serif leading-relaxed text-center p-8 rounded-lg border-2 border-muted bg-muted-10 relative"
-                >
-                  <div className="absolute top-4 right-4 flex gap-2">
-                    <button
-                      onClick={copyToClipboard}
-                      className={`p-2 rounded-full transition-all duration-300 ${
-                        isDark
-                          ? 'hover:bg-gray-800'
-                          : 'hover:bg-gray-100'
-                      }`}
-                      style={{ color: '#A8A29D' }}
-                      aria-label="Copy to clipboard"
-                    >
-                      {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    </button>
-                    <RetryButton
-                      icon={RefreshCw}
-                      onClick={handleRefresh}
-                      isDisabled={isLoading}
-                      ariaLabel="Get another declaration"
-                    />
-                  </div>
-                  <div
-                    className={`animate-fade-in-up ${
-                      declaration.tone === 'acceptance'
-                        ? 'text-green-600 dark:text-green-400'
-                        : 'text-red-600 dark:text-red-400'
-                    }`}
-                    onAnimationStart={() => setIsTyping(true)}
-                    aria-live="polite"
-                  >
-                    {declaration.response}
-                  </div>
-                </div>
-              </div>
-
-              {copied && (
-                <div
-                  className="text-sm font-serif animate-pulse muted"
-                >
-                  Copied!
-                </div>
-              )}
-            </ResultContainer>
-          )}
+           {declaration && (
+             <ResultContainer>
+               <LongResponse
+                 isDark={isDark}
+                 data={{
+                   text: declaration.response,
+                   original: declaration.original,
+                   words: [] // No annotations for dramatic declarations
+                 }}
+                 isLoading={isLoading}
+                 onRefresh={handleRefresh}
+                 onStartTyping={() => setIsTyping(true)}
+               />
+             </ResultContainer>
+           )}
 
 
           {error && (

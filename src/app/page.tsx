@@ -117,42 +117,9 @@ export default function Home() {
           color: inherit;
         }
 
-        /* Custom scrollbar styling */
+        /* Smooth scrolling behavior */
         .scrollbar-custom {
-          scrollbar-width: thin;
-          scrollbar-color: rgba(168, 162, 157, 0.6) rgba(168, 162, 157, 0.1);
           scroll-behavior: smooth;
-        }
-
-        .scrollbar-custom::-webkit-scrollbar {
-          height: 8px;
-        }
-
-        .scrollbar-custom::-webkit-scrollbar-track {
-          background: rgba(168, 162, 157, 0.1);
-          border-radius: 4px;
-        }
-
-        .scrollbar-custom::-webkit-scrollbar-thumb {
-          background: rgba(168, 162, 157, 0.6);
-          border-radius: 4px;
-          transition: background-color 0.3s ease;
-        }
-
-        .scrollbar-custom::-webkit-scrollbar-thumb:hover {
-          background: rgba(168, 162, 157, 0.8);
-        }
-
-        .dark .scrollbar-custom::-webkit-scrollbar-track {
-          background: rgba(168, 162, 157, 0.15);
-        }
-
-        .dark .scrollbar-custom::-webkit-scrollbar-thumb {
-          background: rgba(168, 162, 157, 0.7);
-        }
-
-        .dark .scrollbar-custom::-webkit-scrollbar-thumb:hover {
-          background: rgba(168, 162, 157, 0.9);
         }
       `}</style>
     </div>

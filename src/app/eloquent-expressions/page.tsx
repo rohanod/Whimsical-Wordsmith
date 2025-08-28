@@ -73,7 +73,7 @@ const App = () => {
         ? `Previously crafted versions: ${previousSuggestions.join('; ')}.`
         : '';
 
-      const prompt = `The user wants to transform this ordinary phrase into something magnificently fancy and eloquent:
+       const prompt = `The user wants to transform this ordinary phrase into something magnificently fancy and eloquent:
 
 "${phrase}"
 
@@ -83,7 +83,7 @@ You are a distinguished wordsmith and master of eloquent expression, skilled in 
 
 IMPORTANT LENGTH GUIDELINES:
 - For phrases 1-3 words: Keep transformation under 8 words
-- For phrases 4-6 words: Keep transformation under 12 words  
+- For phrases 4-6 words: Keep transformation under 12 words
 - For phrases 7+ words: Can expand more freely but stay reasonable
 - Focus on replacing words with fancier alternatives rather than adding many new words
 
@@ -95,22 +95,41 @@ Your rewritten phrase should:
 - Be entertaining and delightfully over-the-top
 - Respect the length guidelines above
 
-Additionally, provide annotations for 3-5 key word choices as an array of items with exactly these fields and no extra properties: word and reasoning. Do NOT include positions, indices, or counts. Focus on individual words or maximum 2-word phrases. Each explanation should be ≤ 15 words, simple and clear.
+CRITICAL: Return ONLY an array of word segments. Each segment should be a separate object with "word" and "reasoning" fields. Do NOT combine multiple words into a single reasoning explanation - each word segment gets its own reasoning.
 
-Prefer shorter explanations for single words over longer explanations for phrases.
+You can leave the reasoning field blank ("") if a word segment doesn't need explanation or if the transformation is obvious.
 
-Return JSON with fields original and words (array of { word, reasoning }). Do not include transformed.`;
+Example: If the transformation is "I find myself in profound gastronomic yearning", return:
+[
+  {"word": "I find myself in", "reasoning": "Sets formal introspective tone"},
+  {"word": "profound", "reasoning": "Elevates simple to philosophical"},
+  {"word": "gastronomic yearning", "reasoning": "Transforms hunger to sophisticated desire"}
+]
 
-      // Define schema and example for this app
-      const schemaDescription = `Original phrase with 3-5 words [{ word, reasoning }] (no positions); no transformed output`;
-      
-      const exampleFormat = `{
-  "original": "I'm hungry",
-  "words": [
-    { "word": "profound", "reasoning": "Elevates simple hunger to philosophical depth" },
-    { "word": "gastronomic yearning", "reasoning": "Transforms 'hungry' into sophisticated culinary desire" }
-  ]
-}`;
+NOT this (which combines explanations):
+[
+  {"word": "I find myself in profound gastronomic yearning", "reasoning": "Sets tone, elevates hunger, transforms desire"}
+]
+
+Each reasoning should be specific to that exact word/segment only. If a segment doesn't need special explanation or is obvious, use an empty string ("") for the reasoning field.`;
+
+       // Define schema and example for this app
+       const schemaDescription = `Array of word segments with word text and reasoning for eloquent phrase transformation`;
+
+       const exampleFormat = `[
+  {
+    "word": "I find myself in a state of",
+    "reasoning": "Sets a formal, introspective tone"
+  },
+  {
+    "word": "profound gastronomic yearning",
+    "reasoning": "Elevates simple hunger to philosophical depth"
+  },
+  {
+    "word": "that demands immediate attention",
+    "reasoning": "Adds dramatic urgency to the request"
+  }
+]`;
 
       const response = await fetch('/api/generate', {
         method: 'POST',
@@ -131,8 +150,15 @@ Return JSON with fields original and words (array of { word, reasoning }). Do no
 
       const data = await response.json();
       
-      setSuggestion(data);
-      setPreviousSuggestions(prev => [...prev, data.transformed]);
+       // The response is an array of word/reasoning objects
+       const wordsArray = Array.isArray(data) ? data : [];
+       // Reconstruct the transformed text from the words array
+       const transformedText = wordsArray.map((w: {word: string, reasoning: string}) => w.word).join(' ');
+       setSuggestion({
+         original: phrase,
+         words: wordsArray
+       });
+       setPreviousSuggestions(prev => [...prev, transformedText]);
     } catch (error) {
       console.error('Error fetching suggestion:', error);
       setError(true);
@@ -203,13 +229,13 @@ Return JSON with fields original and words (array of { word, reasoning }). Do no
 
           {suggestion && (
             <ResultContainer>
-              <LongResponse
-                isDark={isDark}
-                data={{ text: suggestion.original, original: suggestion.original, words: suggestion.words }}
-                isLoading={isLoading}
-                onRefresh={handleRefresh}
-                onStartTyping={() => setIsTyping(true)}
-              />
+               <LongResponse
+                 isDark={isDark}
+                 data={{ text: suggestion.words.map((w: {word: string, reasoning: string}) => w.word).join(' '), original: suggestion.original, words: suggestion.words }}
+                 isLoading={isLoading}
+                 onRefresh={handleRefresh}
+                 onStartTyping={() => setIsTyping(true)}
+               />
             </ResultContainer>
           )}
 
