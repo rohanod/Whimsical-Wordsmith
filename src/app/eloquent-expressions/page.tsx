@@ -34,7 +34,7 @@ const useTheme = () => {
 
 const App = () => {
   const [phrase, setPhrase] = useState('');
-  const [suggestion, setSuggestion] = useState<{
+  const [result, setResult] = useState<{
     original: string;
     words: Array<{
       word: string;
@@ -43,7 +43,7 @@ const App = () => {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [previousSuggestions, setPreviousSuggestions] = useState<string[]>([]);
+  const [previousResults, setPreviousResults] = useState<string[]>([]);
   const [error, setError] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
 
@@ -65,12 +65,12 @@ const App = () => {
 
     // Clear previous result when submitting a new request (not refresh)
     if (!refresh) {
-      setSuggestion(null);
+      setResult(null);
     }
 
     try {
-      const previousContext = refresh && previousSuggestions.length > 0
-        ? `Previously crafted versions: ${previousSuggestions.join('; ')}.`
+      const previousContext = refresh && previousResults.length > 0
+        ? `Previously crafted versions: ${previousResults.join('; ')}.`
         : '';
 
        const prompt = `The user wants to transform this ordinary phrase into something magnificently fancy and eloquent:
@@ -154,15 +154,15 @@ Each reasoning should be specific to that exact word/segment only. If a segment 
        const wordsArray = Array.isArray(data) ? data : [];
        // Reconstruct the transformed text from the words array
        const transformedText = wordsArray.map((w: {word: string, reasoning: string}) => w.word).join(' ');
-       setSuggestion({
+       setResult({
          original: phrase,
          words: wordsArray
        });
-       setPreviousSuggestions(prev => [...prev, transformedText]);
+       setPreviousResults(prev => [...prev, transformedText]);
     } catch (error) {
       console.error('Error fetching suggestion:', error);
       setError(true);
-      setSuggestion(null);
+      setResult(null);
     } finally {
       setIsLoading(false);
     }
@@ -170,8 +170,8 @@ Each reasoning should be specific to that exact word/segment only. If a segment 
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setPhrase(e.target.value);
-    setSuggestion(null);
-    setPreviousSuggestions([]);
+    setResult(null);
+    setPreviousResults([]);
     setError(false);
     setIsTyping(false);
     // no-op: copy state handled inside LongResponse
@@ -185,8 +185,8 @@ Each reasoning should be specific to that exact word/segment only. If a segment 
   };
 
   const handleRefresh = () => {
-    if (suggestion && !isLoading) {
-      setSuggestion(null);
+    if (result && !isLoading) {
+      setResult(null);
       setError(false);
     // copy state handled inside LongResponse
       setIsTyping(false);
@@ -227,17 +227,17 @@ Each reasoning should be specific to that exact word/segment only. If a segment 
             />
           </MainInputContainer>
 
-          {suggestion && (
-            <ResultContainer>
-               <LongResponse
-                 isDark={isDark}
-                 data={{ text: suggestion.words.map((w: {word: string, reasoning: string}) => w.word).join(' '), original: suggestion.original, words: suggestion.words }}
-                 isLoading={isLoading}
-                 onRefresh={handleRefresh}
-                 onStartTyping={() => setIsTyping(true)}
-               />
-            </ResultContainer>
-          )}
+           {result && (
+             <ResultContainer>
+                <LongResponse
+                  isDark={isDark}
+                  data={{ text: result.words.map((w: {word: string, reasoning: string}) => w.word).join(' '), original: result.original, words: result.words }}
+                  isLoading={isLoading}
+                  onRefresh={handleRefresh}
+                  onStartTyping={() => setIsTyping(true)}
+                />
+             </ResultContainer>
+           )}
 
           {error && (
             <div className="flex justify-center animate-shake">

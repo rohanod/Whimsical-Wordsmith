@@ -39,7 +39,7 @@ const App = () => {
   } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [previousDeclarations, setPreviousDeclarations] = useState<string[]>([]);
+  const [previousResults, setPreviousResults] = useState<string[]>([]);
   const [error, setError] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
   const { isDark, setIsDark } = useTheme();
@@ -61,8 +61,8 @@ const App = () => {
     }
 
     try {
-      const previousContext = refresh && previousDeclarations.length > 0
-        ? `Previously created declarations: ${previousDeclarations.join('; ')}.`
+      const previousContext = refresh && previousResults.length > 0
+        ? `Previously created declarations: ${previousResults.join('; ')}.`
         : '';
 
       const tone = responseType === 'accept' ? 'acceptance' : 'rejection';
@@ -126,7 +126,7 @@ Return the dramatic declaration, whether it's an acceptance or rejection, and th
       const data = await response.json();
       
       setDeclaration(data);
-      setPreviousDeclarations(prev => [...prev, data.response]);
+      setPreviousResults(prev => [...prev, data.response]);
     } catch (error) {
       console.error('Error fetching declaration:', error);
       setError(true);
@@ -139,7 +139,7 @@ Return the dramatic declaration, whether it's an acceptance or rejection, and th
   const handleRequestChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setRequest(e.target.value);
     setDeclaration(null);
-    setPreviousDeclarations([]);
+    setPreviousResults([]);
     setError(false);
     setIsTyping(false);
   };
@@ -147,7 +147,7 @@ Return the dramatic declaration, whether it's an acceptance or rejection, and th
   const handleResponseTypeChange = (type: 'accept' | 'decline') => {
     setResponseType(type);
     setDeclaration(null);
-    setPreviousDeclarations([]);
+    setPreviousResults([]);
     setError(false);
   };
 
